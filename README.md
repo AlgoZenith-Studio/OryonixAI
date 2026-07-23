@@ -482,7 +482,7 @@ If you find Oryonix AI useful, please consider giving it a star! It helps others
 ---
 
 <p align="center">
-  Built with ❤️ by <a href="https://github.com/Subhankar-Patra1">Subhankar Patra</a> and the open-source community.
+  Built with ❤️ by <a href="https://github.com/Subhankar-Patra1">AlgoZenith Studio/a> and the open-source community.
   <br />
   <sub>Oryonix AI — Tell it what to do. Watch it work.</sub>
 </p>

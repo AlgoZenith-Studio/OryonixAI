@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Lenis from "lenis";
 // Added useScroll and useTransform for the stacking scroll effect
 import { motion, AnimatePresence, useMotionValue, useMotionTemplate, useScroll, useTransform } from "framer-motion";
@@ -16,6 +15,7 @@ import { RadialGlowButton } from "@/components/ui/radial-glow-button";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { SmoothCursor } from "@/components/ui/smooth-cursor";
 import { SharedTooltipAvatars } from "@/components/ui/shared-tooltip-avatars";
+import { Marquee } from "@/components/ui/marquee-01-utils/marquee";
 import "./App.css";
 
 /* ─── Data ─── */
@@ -1579,28 +1579,68 @@ function OpenSource() {
 
 /* ═══════════ TESTIMONIALS ═══════════ */
 function Testimonials() {
+  const col1 = [TESTIMONIALS[0], TESTIMONIALS[2], TESTIMONIALS[1]];
+  const col2 = [TESTIMONIALS[1], TESTIMONIALS[3], TESTIMONIALS[0]];
+  const col3 = [TESTIMONIALS[2], TESTIMONIALS[0], TESTIMONIALS[3]];
+
   return (
-    <section className="section section-alt">
+    <section className="section section-alt" id="testimonials">
       <div className="container">
         <div className="section__head">
           <h2>Loved by <span className="accent-text">developers</span></h2>
           <p>See what people are saying about Oryonix AI.</p>
         </div>
-        <motion.div className="test-grid" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-50px" }}>
-          {TESTIMONIALS.map(t => (
-            <motion.div key={t.name} className="test-card" variants={fadeUp} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
-              <p className="test-card__quote">&ldquo;{t.q}&rdquo;</p>
-              <div className="test-card__author">
-                <div className="test-card__avatar">{t.av}</div>
-                <div><div className="test-card__name">{t.name}</div><div className="test-card__role">{t.role}</div></div>
+        <div className="test-marquee-wrapper">
+          <Marquee vertical pauseOnHover className="[--duration:20s]" style={{ gap: "24px" }}>
+            {col1.map((t, i) => (
+              <div key={i} className="test-card">
+                <p className="test-card__quote">&ldquo;{t.q}&rdquo;</p>
+                <div className="test-card__author">
+                  <div className="test-card__avatar">{t.av}</div>
+                  <div className="test-card__meta">
+                    <div className="test-card__name">{t.name}</div>
+                    <div className="test-card__role">{t.role}</div>
+                  </div>
+                </div>
               </div>
-            </motion.div>
-          ))}
-        </motion.div>
+            ))}
+          </Marquee>
+          <Marquee vertical reverse pauseOnHover className="[--duration:24s] test-col-tablet-hide" style={{ gap: "24px" }}>
+            {col2.map((t, i) => (
+              <div key={i} className="test-card">
+                <p className="test-card__quote">&ldquo;{t.q}&rdquo;</p>
+                <div className="test-card__author">
+                  <div className="test-card__avatar">{t.av}</div>
+                  <div className="test-card__meta">
+                    <div className="test-card__name">{t.name}</div>
+                    <div className="test-card__role">{t.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </Marquee>
+          <Marquee vertical pauseOnHover className="[--duration:22s] test-col-mobile-hide" style={{ gap: "24px" }}>
+            {col3.map((t, i) => (
+              <div key={i} className="test-card">
+                <p className="test-card__quote">&ldquo;{t.q}&rdquo;</p>
+                <div className="test-card__author">
+                  <div className="test-card__avatar">{t.av}</div>
+                  <div className="test-card__meta">
+                    <div className="test-card__name">{t.name}</div>
+                    <div className="test-card__role">{t.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </Marquee>
+        </div>
       </div>
     </section>
   );
 }
+
+
+
 
 /* ═══════════ FINAL CTA ═══════════ */
 function CTA() {

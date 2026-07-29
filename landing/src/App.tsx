@@ -3,12 +3,13 @@ import Lenis from "lenis";
 // Added useScroll and useTransform for the stacking scroll effect
 import { motion, AnimatePresence, useMotionValue, useMotionTemplate, useScroll, useTransform } from "framer-motion";
 import {
-  Menu, X, ArrowRight, Play, Check,
+  Menu, X, ArrowRight, Play, Pause, RotateCcw, Check,
   AppWindow, Sparkles, Lock, Rocket, Cpu, Eye, Star,
   Package, Plug, Terminal, CheckCircle, RefreshCw,
   BarChart2, ChevronUp, ChevronDown,
   Brain, Zap, Sliders, Settings,
-  ArrowLeft, LayoutDashboard, Plus, Folder, Search, MessageSquare, Accessibility
+  ArrowLeft, LayoutDashboard, Plus, Folder, Search, MessageSquare, Accessibility,
+  Plane, ShoppingCart, FileText, BookOpen, MousePointer
 } from "lucide-react";
 // import { Key as KeyIcon } from "@phosphor-icons/react";
 import { RadialGlowButton } from "@/components/ui/radial-glow-button";
@@ -593,6 +594,390 @@ function Navbar({ visible, activeSection, onNavClick, onInstallClick }: { visibl
   );
 }
 
+/* ═══════════ INTERACTIVE HERO AGENT SIMULATOR ═══════════ */
+const SIM_SCENARIOS = [
+  {
+    id: "flight",
+    title: "Book Flight",
+    icon: Plane,
+    badge: "Flight Search",
+    prompt: "Book a flight to NYC for next Friday under $300...",
+    url: "google.com/travel/flights",
+    steps: [
+      { text: "Opened Google Flights", log: "GET https://google.com/travel/flights [200 OK]", cursor: { x: "20%", y: "15%" } },
+      { text: "Entered destination: NYC", log: "type('#search-input', 'NYC') -> Selected JFK/LGA", cursor: { x: "45%", y: "25%" } },
+      { text: "Selecting departure date & seat", log: "click('#date-picker') -> Picked Fri Oct 24", cursor: { x: "65%", y: "35%" } },
+      { text: "Selected Delta Air Lines ($249)", log: "DOM.select('.flight-card.best-val') -> $249", cursor: { x: "50%", y: "65%" } }
+    ]
+  },
+  {
+    id: "price",
+    title: "Track Price",
+    icon: ShoppingCart,
+    badge: "Price Alert",
+    prompt: "Track price drop on Sony WH-1000XM5 headphones...",
+    url: "amazon.com/dp/B09XS7JWHH",
+    steps: [
+      { text: "Navigated to product page", log: "DOM.fetch('amazon.com/dp/B09XS7JWHH')", cursor: { x: "25%", y: "15%" } },
+      { text: "Extracted current price ($328)", log: "scrape('.a-price-whole') -> $328 (-18%)", cursor: { x: "50%", y: "35%" } },
+      { text: "Compared 30-day historical trend", log: "LocalOllama.eval('Lowest 30-day price?') -> YES", cursor: { x: "75%", y: "50%" } },
+      { text: "Created local notification alert", log: "LocalStore.setAlert({ target: 330, current: 328 })", cursor: { x: "60%", y: "75%" } }
+    ]
+  },
+  {
+    id: "form",
+    title: "Auto-Fill Form",
+    icon: FileText,
+    badge: "Job Application",
+    prompt: "Fill Senior Developer application on TechCorp...",
+    url: "careers.techcorp.io/apply/senior-dev",
+    steps: [
+      { text: "Parsed 6 application form fields", log: "DOM.inspectForm() -> Found 6 input fields", cursor: { x: "30%", y: "20%" } },
+      { text: "Autofilled profile & experience", log: "type('#name', 'Alex Chen') -> type('#email', 'alex@dev.io')", cursor: { x: "40%", y: "45%" } },
+      { text: "Uploaded resume_2026.pdf", log: "uploadFile('#resume-dropzone', 'resume_2026.pdf')", cursor: { x: "65%", y: "65%" } },
+      { text: "Verified form ready to submit", log: "AgentStatus: READY_TO_SUBMIT [100% Valid]", cursor: { x: "80%", y: "85%" } }
+    ]
+  },
+  {
+    id: "paper",
+    title: "Summarize Paper",
+    icon: BookOpen,
+    badge: "arXiv AI Research",
+    prompt: "Summarize key takeaways from arXiv 2603.14092...",
+    url: "arxiv.org/abs/2603.14092",
+    steps: [
+      { text: "Fetched arXiv paper metadata", log: "GET https://arxiv.org/abs/2603.14092 [200 OK]", cursor: { x: "20%", y: "15%" } },
+      { text: "Parsed abstract & methodology", log: "LocalLLM.summarize(tokens=4120)", cursor: { x: "45%", y: "30%" } },
+      { text: "Extracted 3 technical insights", log: "Extracted: 94.2% accuracy, zero data leakage", cursor: { x: "60%", y: "55%" } },
+      { text: "Saved local markdown summary", log: "File.write('~/Notes/arxiv_2603.14092.md')", cursor: { x: "50%", y: "80%" } }
+    ]
+  }
+];
+
+function HeroAgentSimulator() {
+  const [activeScenarioIdx, setActiveScenarioIdx] = useState(0);
+  const [stepIdx, setStepIdx] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [showConsole, setShowConsole] = useState(false);
+
+  const scenario = SIM_SCENARIOS[activeScenarioIdx];
+  const currentStep = scenario.steps[stepIdx] || scenario.steps[0];
+
+  // Auto-advance step timeline
+  useEffect(() => {
+    if (!isPlaying) return;
+    const timer = setTimeout(() => {
+      setStepIdx((prev) => {
+        if (prev < scenario.steps.length - 1) {
+          return prev + 1;
+        } else {
+          return 0; // Loop current scenario
+        }
+      });
+    }, 2200);
+    return () => clearTimeout(timer);
+  }, [stepIdx, isPlaying, activeScenarioIdx, scenario.steps.length]);
+
+  const handleSelectScenario = (idx: number) => {
+    setActiveScenarioIdx(idx);
+    setStepIdx(0);
+    setIsPlaying(true);
+  };
+
+  return (
+    <motion.div
+      className="mockup"
+      initial={{ opacity: 0, y: 60 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {/* Preset Scenario Selector Pills */}
+      <div className="mockup__presets">
+        <span className="mockup__presets-label"><Sparkles size={13} /> Preset Demos:</span>
+        {SIM_SCENARIOS.map((sc, i) => {
+          const Icon = sc.icon;
+          const isActive = i === activeScenarioIdx;
+          return (
+            <button
+              key={sc.id}
+              className={`mockup__preset-pill ${isActive ? "mockup__preset-pill--active" : ""}`}
+              onClick={() => handleSelectScenario(i)}
+            >
+              <Icon size={13} />
+              <span>{sc.title}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mockup__frame">
+        {/* Browser Header & Address Bar */}
+        <div className="mockup__bar">
+          <div className="mockup__dots">
+            <span className="dot dot--r" />
+            <span className="dot dot--y" />
+            <span className="dot dot--g" />
+          </div>
+          <div className="mockup__tabs">
+            <div className="mockup__tab mockup__tab--active">
+              <span className="mockup__tab-badge">{scenario.badge}</span>
+              <span className="mockup__tab-title">{scenario.url.split('/')[0]}</span>
+            </div>
+          </div>
+          <div className="mockup__url">{scenario.url}</div>
+          <div className="mockup__bar-controls">
+            <button
+              className="mockup__ctrl-btn"
+              onClick={() => setIsPlaying(!isPlaying)}
+              title={isPlaying ? "Pause Demo" : "Play Demo"}
+            >
+              {isPlaying ? <Pause size={13} /> : <Play size={13} />}
+            </button>
+            <button
+              className="mockup__ctrl-btn"
+              onClick={() => setStepIdx(0)}
+              title="Restart Scenario"
+            >
+              <RotateCcw size={13} />
+            </button>
+          </div>
+        </div>
+
+        {/* Browser Main Body */}
+        <div className="mockup__body">
+          {/* Left Panel: Agent Control & Step Progress */}
+          <div className="mockup__panel">
+            <div className="mockup__panel-head">
+              <img src="/logo.svg" alt="Oryonix AI Logo" className="mockup__panel-logo" />
+              <span>Oryonix AI</span>
+              <span className="mockup__local-tag">Local LLM</span>
+            </div>
+
+            <div className="mockup__input">
+              <Sparkles size={14} className="mockup__input-icon" />
+              <span>{scenario.prompt}</span>
+              <span className="mockup__cursor" />
+            </div>
+
+            <div className="mockup__status">
+              <span className={`mockup__status-dot ${isPlaying ? "mockup__status-dot--active" : ""}`} />
+              <span>{isPlaying ? "Agent is executing..." : "Agent paused"}</span>
+            </div>
+
+            <div className="mockup__steps">
+              {scenario.steps.map((st, i) => {
+                const isDone = i < stepIdx;
+                const isActive = i === stepIdx;
+                return (
+                  <div
+                    key={i}
+                    className={`mockup__step ${isDone ? "mockup__step--done" : ""} ${isActive ? "mockup__step--active" : ""}`}
+                  >
+                    {isDone ? (
+                      <Check size={14} strokeWidth={2.5} className="mockup__step-icon" />
+                    ) : isActive ? (
+                      <RefreshCw size={14} strokeWidth={2.5} className="animate-spin mockup__step-icon" />
+                    ) : (
+                      <span className="mockup__step-num">{i + 1}</span>
+                    )}
+                    <span>{st.text}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button
+              className="mockup__console-toggle"
+              onClick={() => setShowConsole(!showConsole)}
+            >
+              <Terminal size={12} />
+              <span>{showConsole ? "Hide LLM Log" : "View LLM Log"}</span>
+            </button>
+          </div>
+
+          {/* Right Viewport: Live Simulated Web Application */}
+          <div className="mockup__page">
+            {/* Animated AI Agent Cursor */}
+            <motion.div
+              className="mockup__agent-cursor"
+              animate={{ left: currentStep.cursor.x, top: currentStep.cursor.y }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+            >
+              <MousePointer size={18} className="mockup__cursor-icon" />
+              <span className="mockup__cursor-label">AI Agent</span>
+            </motion.div>
+
+            {/* SCENARIO 1: FLIGHT BOOKING */}
+            {scenario.id === "flight" && (
+              <div className="mockup__viewport-content">
+                <div className="mockup__flight-header">
+                  <div className="mockup__flight-route">✈️ NYC → LON • Fri, Oct 24</div>
+                  <div className="mockup__flight-tag">Nonstop Only</div>
+                </div>
+
+                <div className="mockup__cards-list">
+                  <div className={`mockup__sim-card ${stepIdx >= 3 ? "mockup__sim-card--selected" : ""}`}>
+                    <div className="mockup__sim-card-main">
+                      <div className="mockup__airline">
+                        <span className="mockup__airline-dot mockup__airline-dot--delta" />
+                        <div>
+                          <div className="mockup__sim-title">Delta Air Lines</div>
+                          <div className="mockup__sim-sub">8:30 AM – 11:15 AM (2h 45m)</div>
+                        </div>
+                      </div>
+                      <div className="mockup__price">$249</div>
+                    </div>
+                    {stepIdx >= 3 && (
+                      <div className="mockup__badge-selected">
+                        <Check size={12} /> Lowest Fare Selected
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mockup__sim-card">
+                    <div className="mockup__sim-card-main">
+                      <div className="mockup__airline">
+                        <span className="mockup__airline-dot mockup__airline-dot--united" />
+                        <div>
+                          <div className="mockup__sim-title">United Airlines</div>
+                          <div className="mockup__sim-sub">10:15 AM – 1:00 PM (2h 45m)</div>
+                        </div>
+                      </div>
+                      <div className="mockup__price">$289</div>
+                    </div>
+                  </div>
+
+                  <div className="mockup__sim-card">
+                    <div className="mockup__sim-card-main">
+                      <div className="mockup__airline">
+                        <span className="mockup__airline-dot mockup__airline-dot--aa" />
+                        <div>
+                          <div className="mockup__sim-title">American Airlines</div>
+                          <div className="mockup__sim-sub">1:45 PM – 4:30 PM (2h 45m)</div>
+                        </div>
+                      </div>
+                      <div className="mockup__price">$310</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* SCENARIO 2: PRICE TRACKER */}
+            {scenario.id === "price" && (
+              <div className="mockup__viewport-content">
+                <div className="mockup__product-card">
+                  <div className="mockup__product-head">
+                    <div className="mockup__product-img">🎧</div>
+                    <div>
+                      <div className="mockup__product-title">Sony WH-1000XM5 Wireless Headphones</div>
+                      <div className="mockup__product-rating">★★★★★ 4.8 (12,490 reviews)</div>
+                    </div>
+                  </div>
+                  <div className="mockup__product-price-row">
+                    <div className="mockup__price-big">$328.00</div>
+                    <div className="mockup__price-was">$399.99</div>
+                    <div className="mockup__discount-badge">-18% OFF</div>
+                  </div>
+                  <div className="mockup__trend-box">
+                    <div className="mockup__trend-label">30-Day Price Trend</div>
+                    <div className="mockup__trend-bars">
+                      <div className="mockup__bar-col" style={{ height: "80%" }} />
+                      <div className="mockup__bar-col" style={{ height: "70%" }} />
+                      <div className="mockup__bar-col" style={{ height: "75%" }} />
+                      <div className="mockup__bar-col" style={{ height: "60%" }} />
+                      <div className="mockup__bar-col mockup__bar-col--lowest" style={{ height: "40%" }} />
+                    </div>
+                  </div>
+                  {stepIdx >= 3 && (
+                    <div className="mockup__alert-active">
+                      <CheckCircle size={14} /> Price drop notification armed (&lt; $330)
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* SCENARIO 3: FORM AUTOFILL */}
+            {scenario.id === "form" && (
+              <div className="mockup__viewport-content">
+                <div className="mockup__form-box">
+                  <div className="mockup__form-title">TechCorp • Senior Developer Application</div>
+                  <div className="mockup__field-group">
+                    <label>Full Name</label>
+                    <div className={`mockup__field-input ${stepIdx >= 1 ? "mockup__field-input--filled" : ""}`}>
+                      <span>{stepIdx >= 1 ? "Alex Chen" : "Enter name..."}</span>
+                      {stepIdx >= 1 && <Check size={13} className="text-green-500" />}
+                    </div>
+                  </div>
+                  <div className="mockup__field-group">
+                    <label>Email Address</label>
+                    <div className={`mockup__field-input ${stepIdx >= 1 ? "mockup__field-input--filled" : ""}`}>
+                      <span>{stepIdx >= 1 ? "alex.chen@dev.io" : "Enter email..."}</span>
+                      {stepIdx >= 1 && <Check size={13} className="text-green-500" />}
+                    </div>
+                  </div>
+                  <div className="mockup__field-group">
+                    <label>Resume</label>
+                    <div className={`mockup__field-input ${stepIdx >= 2 ? "mockup__field-input--filled" : ""}`}>
+                      <span>{stepIdx >= 2 ? "📎 resume_2026.pdf (Uploaded)" : "Attach resume..."}</span>
+                      {stepIdx >= 2 && <Check size={13} className="text-green-500" />}
+                    </div>
+                  </div>
+                  {stepIdx >= 3 && (
+                    <div className="mockup__form-success">
+                      <CheckCircle size={14} /> Application verified by local agent
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* SCENARIO 4: PAPER SUMMARIZER */}
+            {scenario.id === "paper" && (
+              <div className="mockup__viewport-content">
+                <div className="mockup__paper-box">
+                  <div className="mockup__paper-badge">arXiv:2603.14092 [cs.AI]</div>
+                  <div className="mockup__paper-title">Autonomous Web Agents with Local LLM Reasoning</div>
+                  <div className="mockup__paper-bullets">
+                    <div className={`mockup__bullet ${stepIdx >= 1 ? "mockup__bullet--active" : ""}`}>
+                      <Sparkles size={13} /> <span><strong>Accuracy:</strong> 94.2% task success on WebArena</span>
+                    </div>
+                    <div className={`mockup__bullet ${stepIdx >= 2 ? "mockup__bullet--active" : ""}`}>
+                      <Lock size={13} /> <span><strong>Privacy:</strong> 100% local execution via Ollama</span>
+                    </div>
+                    <div className={`mockup__bullet ${stepIdx >= 3 ? "mockup__bullet--active" : ""}`}>
+                      <Zap size={13} /> <span><strong>Multi-Tab:</strong> Parallel DOM manipulation & state engine</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Expandable LLM Console Overlay */}
+            {showConsole && (
+              <motion.div
+                className="mockup__console-drawer"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+              >
+                <div className="mockup__console-head">
+                  <Terminal size={12} />
+                  <span>Ollama Local Log</span>
+                </div>
+                <div className="mockup__console-code">
+                  <code>{currentStep.log}</code>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function Hero({ onNavClick }: { onNavClick?: (e: any, href: string) => void }) {
   // Generate random twinkling stars/dots in space
   const stars = useMemo(() => {
@@ -655,32 +1040,7 @@ function Hero({ onNavClick }: { onNavClick?: (e: any, href: string) => void }) {
           </div>
         </motion.div>
 
-        <motion.div className="mockup" initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
-          <div className="mockup__frame">
-            <div className="mockup__bar">
-              <div className="mockup__dots"><span className="dot dot--r" /><span className="dot dot--y" /><span className="dot dot--g" /></div>
-              <div className="mockup__url">oryonix.ai</div>
-            </div>
-            <div className="mockup__body">
-              <div className="mockup__panel">
-                <div className="mockup__panel-head">
-                  <img src="/logo.svg" alt="Oryonix AI Logo" className="mockup__panel-logo" />
-                  Oryonix AI
-                </div>
-                <div className="mockup__input"><span>Book a flight to NYC for next Friday...</span><span className="mockup__cursor" /></div>
-                <div className="mockup__status"><span className="mockup__status-dot" />Agent is working...</div>
-                <div className="mockup__steps">
-                  <div className="mockup__step mockup__step--done"><Check size={16} strokeWidth={2} style={{ display: 'inline', marginRight: '6px' }} /> Opened Google Flights</div>
-                  <div className="mockup__step mockup__step--done"><Check size={16} strokeWidth={2} style={{ display: 'inline', marginRight: '6px' }} /> Entered destination: NYC</div>
-                  <div className="mockup__step mockup__step--active"><RefreshCw size={16} strokeWidth={2} className="animate-spin" style={{ display: 'inline', marginRight: '6px' }} /> Selecting date...</div>
-                </div>
-              </div>
-              <div className="mockup__page">
-                <div className="skel skel--h" /><div className="skel-grid"><div className="skel skel--card" /><div className="skel skel--card" /><div className="skel skel--card" /></div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        <HeroAgentSimulator />
 
         <motion.div className="trust" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
           <div className="trust__item"><span className="trust__val"><Star size={16} className="trust__star" /> 4.9</span><span className="trust__label">Chrome Rating</span></div>

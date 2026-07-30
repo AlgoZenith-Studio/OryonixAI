@@ -669,37 +669,29 @@ button:focus-visible {
   flex-direction: column;
 }
 
-/* Simulator Preset Pill Navigation */
+/* Simulator Preset Pill Navigation inside Sidebar */
 .mockup__presets {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-
-.mockup__presets-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 6px;
+  margin: 2px 0 6px 0;
 }
 
 .mockup__preset-pill {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  font-size: 0.78rem;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 8px;
+  font-size: 0.72rem;
   font-weight: 500;
   color: var(--color-text-tertiary);
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
 }
 
 .mockup__preset-pill:hover {
@@ -713,7 +705,7 @@ button:focus-visible {
   background: linear-gradient(135deg, rgba(249, 115, 22, 0.25) 0%, rgba(249, 115, 22, 0.1) 100%);
   border-color: rgba(249, 115, 22, 0.6);
   color: #fdba74;
-  box-shadow: 0 0 15px rgba(249, 115, 22, 0.2);
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.25);
 }
 
 /* Tabs & Bar Controls */

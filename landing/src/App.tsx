@@ -691,25 +691,6 @@ function HeroAgentSimulator() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
     >
-      {/* Preset Scenario Selector Pills */}
-      <div className="mockup__presets">
-        <span className="mockup__presets-label"><Sparkles size={13} /> Preset Demos:</span>
-        {SIM_SCENARIOS.map((sc, i) => {
-          const Icon = sc.icon;
-          const isActive = i === activeScenarioIdx;
-          return (
-            <button
-              key={sc.id}
-              className={`mockup__preset-pill ${isActive ? "mockup__preset-pill--active" : ""}`}
-              onClick={() => handleSelectScenario(i)}
-            >
-              <Icon size={13} />
-              <span>{sc.title}</span>
-            </button>
-          );
-        })}
-      </div>
-
       <div className="mockup__frame">
         {/* Browser Header & Address Bar */}
         <div className="mockup__bar">
@@ -751,6 +732,24 @@ function HeroAgentSimulator() {
               <img src="/logo.svg" alt="Oryonix AI Logo" className="mockup__panel-logo" />
               <span>Oryonix AI</span>
               <span className="mockup__local-tag">Local LLM</span>
+            </div>
+
+            {/* Preset Scenario Selector Pills */}
+            <div className="mockup__presets">
+              {SIM_SCENARIOS.map((sc, i) => {
+                const Icon = sc.icon;
+                const isActive = i === activeScenarioIdx;
+                return (
+                  <button
+                    key={sc.id}
+                    className={`mockup__preset-pill ${isActive ? "mockup__preset-pill--active" : ""}`}
+                    onClick={() => handleSelectScenario(i)}
+                  >
+                    <Icon size={12} />
+                    <span>{sc.title}</span>
+                  </button>
+                );
+              })}
             </div>
 
             <div className="mockup__input">
